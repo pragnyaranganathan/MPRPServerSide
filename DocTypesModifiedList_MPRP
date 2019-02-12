@@ -1,0 +1,58 @@
+I) Doctype - ControlDocument Transformed Item
+
+Sl No	Field Label			Field Name			Type		Options
+----------------------------------------------------------------------------------------------------------------------------------------------
+1.	BOM To Be Used			bom_to_be_used			Link to BOM doctype
+
+II) Doctype - ControlDocument Issues Warehouse
+
+1.	Select Warehouse		select_warehouse		Link to Warehouse doctype
+2. 	Downstream Warehouse		downstream_warehouse		small_text (which has to be filled by the custom script)
+
+
+III) User Doctype
+
+1. 	Role Profile			role_profile_name		Link to Role Profile
+
+IV) Doctype - Role Profile
+
+1.	Default Control Document	default_controldocument		Link to Control Document in the nhance app
+
+------------------------------------------------------------------------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------
+
+
+CustomScript for the ControlDocument
+Named as ControlDocument- Client
+
+
+
+frappe.ui.form.on("ControlDocument", "onload", function(frm, cdt, cdn){
+
+     frm.set_query("bom_to_be_used", "transformed_items", function(doc, cdt, cdn){
+
+     doc = locals[cdt][cdn];
+
+    return {filters: {"item":doc.transformed_materials}};
+
+});
+
+});
+frappe.ui.form.on("ControlDocument Issues Downstream","select_warehouse",function(frm,cdt,cdn){
+	var item_selected = locals[cdt][cdn];
+	var downstream_list = item_selected.downstream_warehouse;
+	if(downstream_list == null || downstream_list === 'undefined'){
+	downstream_list = item_selected.select_warehouse;
+	}
+	else{
+	downstream_list = downstream_list+"\n"+item_selected.select_warehouse;
+	}
+	item_selected.downstream_warehouse = downstream_list; 
+	item_selected.select_warehouse = "";
+	
+	frm.refresh_field("issues_downstream");
+});
+
+
+
