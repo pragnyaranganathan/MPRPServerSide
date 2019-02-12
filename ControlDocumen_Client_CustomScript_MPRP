@@ -1,0 +1,27 @@
+frappe.ui.form.on("ControlDocument", "onload", function(frm, cdt, cdn){
+
+     frm.set_query("bom_to_be_used", "transformed_items", function(doc, cdt, cdn){
+
+     doc = locals[cdt][cdn];
+
+    return {filters: {"item":doc.transformed_materials}};
+
+});
+
+});
+frappe.ui.form.on("ControlDocument Issues Downstream","select_warehouse",function(frm,cdt,cdn){
+	var item_selected = locals[cdt][cdn];
+	var downstream_list = item_selected.downstream_warehouse;
+	if(downstream_list == null || downstream_list === 'undefined'){
+	downstream_list = item_selected.select_warehouse;
+	}
+	else{
+	downstream_list = downstream_list+"\n"+item_selected.select_warehouse;
+	}
+	item_selected.downstream_warehouse = downstream_list; 
+	item_selected.select_warehouse = "";
+	
+	frm.refresh_field("issues_downstream");
+});
+
+
